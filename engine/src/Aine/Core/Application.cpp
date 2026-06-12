@@ -1,4 +1,5 @@
 #include "Aine/Core/Application.h"
+#include "Aine/Core/Log.h"
 #include <iostream>
 namespace Aine
 {
@@ -11,6 +12,8 @@ namespace Aine
 
     int Application::Run()
 	{
+        InitLogSystem();
+
         InitWindow();
       
 
@@ -27,11 +30,16 @@ namespace Aine
     {
     }
 
+    void Application::InitLogSystem()
+    {
+        Log::Init();
+        AINE_CORE_INFO("log system init");
+    }
+
     void Application::MainLoop()
     {
         while (m_Active)
         {
-            std::cout << "main loop" << std::endl;
         }
     }
 

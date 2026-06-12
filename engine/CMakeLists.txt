@@ -1,9 +1,13 @@
 set(AINE_ENGINE_SOURCES 
-    src/Application.cpp
+    "src/Aine/Core/Application.cpp"
+    "src/Aine/Core/Log.cpp"
+    
 )
 
 set(AINE_ENGINE_HEADERS
-    include/Aine/Core/Application.h
+    "include/Aine/Core/Application.h"
+    "include/Aine/Core/Core.h"
+    "include/Aine/Core/Log.h"
 )
 
 add_library(AineEngine STATIC)
@@ -27,6 +31,8 @@ target_link_libraries(
     AineEngine
     PUBLIC
         Aine::Warnings   
+    PRIVATE
+        spdlog::spdlog
 )
 
 source_group(TREE "${CMAKE_CURRENT_SOURCE_DIR}" FILES

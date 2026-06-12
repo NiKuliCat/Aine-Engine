@@ -23,6 +23,8 @@ namespace Aine
         int Run();
         void InitWindow();
 
+        void InitLogSystem();
+
         void MainLoop();
         void Shutdown();
 
