@@ -1,18 +1,18 @@
-    #pragma once
-    #include <Aine/Core/Application.h>
+#pragma once
+#include <Aine/Core/Application.h>
     
-    namespace AineEditor
+namespace AineEditor
+{
+
+
+    class EditorApp : public Aine::Application
     {
+    public:
+        EditorApp();
+        ~EditorApp() {}
 
 
-        class EditorApp : public Aine::Application
-        {
-        public:
-            EditorApp();
-            ~EditorApp() {}
-
-
-        };
+    };
 
         
-    }
+}

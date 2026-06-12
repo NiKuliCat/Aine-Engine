@@ -21,9 +21,16 @@ namespace Aine
 
     public:
         int Run();
+        void InitWindow();
+
+        void MainLoop();
+        void Shutdown();
+
 
 
     private:
+
+        bool m_Active;
         ApplicationDesc m_Desc;
 
     };
