@@ -2,15 +2,15 @@
 #include <string>
 #include <cstdint>
 #include <memory>
-
+#include "Core/Window.h"
 
 namespace Aine
 {
     struct ApplicationDesc
     {
         std::string AppName = "Aine Engine";
-        int Width = 1960;
-        int Height = 1080;
+        uint32_t Width = 1960;
+        uint32_t Height = 1080;
     };
 
     class Application
@@ -34,7 +34,7 @@ namespace Aine
 
         bool m_Active;
         ApplicationDesc m_Desc;
-
+        Ref<Window> m_Window = nullptr;
     };
 
 

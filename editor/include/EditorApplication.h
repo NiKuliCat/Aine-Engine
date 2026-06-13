@@ -1,10 +1,8 @@
 #pragma once
-#include <Aine/Core/Application.h>
+#include <Core/Application.h>
     
 namespace AineEditor
 {
-
-
     class EditorApp : public Aine::Application
     {
     public:

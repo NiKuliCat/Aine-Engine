@@ -2,13 +2,14 @@ set(AINE_ENGINE_SOURCES
     "src/Aine/Core/Application.cpp"
     "src/Aine/Core/Log.cpp"
     
-)
+ "src/Aine/Core/Window.cpp" "src/Aine/Platform/Window/SDLWindow.cpp")
 
 set(AINE_ENGINE_HEADERS
     "include/Aine/Core/Application.h"
     "include/Aine/Core/Core.h"
     "include/Aine/Core/Log.h"
-)
+    "include/Aine/Core/Window.h" 
+    "include/Platform/Window/SDLWindow.h")
 
 add_library(AineEngine STATIC)
 add_library(Aine::Engine ALIAS AineEngine)
@@ -24,7 +25,9 @@ target_sources(
 target_include_directories(
     AineEngine
     PUBLIC
-        ${CMAKE_CURRENT_SOURCE_DIR}/include
+        ${CMAKE_CURRENT_SOURCE_DIR}/include/Aine
+    PRIVATE
+        ${CMAKE_CURRENT_SOURCE_DIR}/include/Platform
 )
 
 target_link_libraries(
@@ -33,6 +36,7 @@ target_link_libraries(
         Aine::Warnings   
     PRIVATE
         spdlog::spdlog
+        SDL3::SDL3
 )
 
 source_group(TREE "${CMAKE_CURRENT_SOURCE_DIR}" FILES

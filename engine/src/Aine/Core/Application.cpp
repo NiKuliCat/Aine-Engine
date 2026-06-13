@@ -1,5 +1,5 @@
-#include "Aine/Core/Application.h"
-#include "Aine/Core/Log.h"
+#include "Core/Application.h"
+#include "Core/Log.h"
 #include <iostream>
 namespace Aine
 {
@@ -28,6 +28,12 @@ namespace Aine
 
     void Application::InitWindow()
     {
+        WindowCreateInfo createInfo{};
+        createInfo.Title = m_Desc.AppName;
+        createInfo.Width = m_Desc.Width;
+        createInfo.Height = m_Desc.Height;
+        createInfo.VSync = true;
+        m_Window = Window::Create(createInfo);
     }
 
     void Application::InitLogSystem()
