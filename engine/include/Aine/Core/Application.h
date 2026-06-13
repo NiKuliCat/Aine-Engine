@@ -4,7 +4,7 @@
 #include <memory>
 #include "Core/Window.h"
 #include "Event/ApplicationEvent.h"
-#include <vulkan/vulkan.h>
+
 namespace Aine
 {
     struct ApplicationDesc
