@@ -34,6 +34,7 @@ target_link_libraries(
     AineEngine
     PUBLIC
         Aine::Warnings   
+        Vulkan::Vulkan
     PRIVATE
         spdlog::spdlog
         SDL3::SDL3

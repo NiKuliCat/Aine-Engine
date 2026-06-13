@@ -49,6 +49,8 @@ endif()
 
 
 add_subdirectory(third-party)
+find_package(Vulkan REQUIRED)
+
 add_subdirectory(engine)
 
 if(AINE_BUILD_EDITOR)
