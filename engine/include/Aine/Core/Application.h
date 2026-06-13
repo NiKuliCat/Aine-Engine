@@ -22,8 +22,8 @@ namespace Aine
     public:
         int Run();
         void InitWindow();
-
         void InitLogSystem();
+        void InitTimeSystem();
 
         void MainLoop();
         void Shutdown();

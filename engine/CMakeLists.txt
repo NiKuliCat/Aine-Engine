@@ -2,14 +2,14 @@ set(AINE_ENGINE_SOURCES
     "src/Aine/Core/Application.cpp"
     "src/Aine/Core/Log.cpp"
     
- "src/Aine/Core/Window.cpp" "src/Aine/Platform/Window/SDLWindow.cpp")
+  "src/Aine/Platform/Window/SDLWindow.cpp" "src/Aine/Core/Time.cpp")
 
 set(AINE_ENGINE_HEADERS
     "include/Aine/Core/Application.h"
     "include/Aine/Core/Core.h"
     "include/Aine/Core/Log.h"
     "include/Aine/Core/Window.h" 
-    "include/Platform/Window/SDLWindow.h" "include/Aine/Event/Event.h" "include/Aine/Event/ApplicationEvent.h")
+    "include/Platform/Window/SDLWindow.h" "include/Aine/Event/Event.h" "include/Aine/Event/ApplicationEvent.h" "include/Aine/Core/Time.h")
 
 add_library(AineEngine STATIC)
 add_library(Aine::Engine ALIAS AineEngine)

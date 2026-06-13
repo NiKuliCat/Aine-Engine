@@ -1,5 +1,6 @@
 #include "Core/Application.h"
 #include "Core/Log.h"
+#include "Core/Time.h"
 #include <iostream>
 namespace Aine
 {
@@ -15,7 +16,7 @@ namespace Aine
         InitLogSystem();
 
         InitWindow();
-      
+        InitTimeSystem();
 
 
         MainLoop();
@@ -43,11 +44,21 @@ namespace Aine
         Log::Init();
     }
 
+    void Application::InitTimeSystem()
+    {
+        Time::Init();
+    }
+
     void Application::MainLoop()
     {
         while (m_Active)
         {
             m_Window->OnUpdate();
+            Time::OnUpdate();
+
+            float deltaTime = Time::GetDeltaTime();
+            float totalTime = Time::GetTotalTime();
+            AINE_CORE_DEBUG("delta : {0},   total : {1}",deltaTime,totalTime);
         }
     }
 
