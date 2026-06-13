@@ -2,7 +2,7 @@ set(AINE_ENGINE_SOURCES
     "src/Aine/Core/Application.cpp"
     "src/Aine/Core/Log.cpp"
     
-  "src/Aine/Platform/Window/SDLWindow.cpp" "src/Aine/Core/Time.cpp" "src/Aine/Platform/Vulkan/VulkanContext.cpp")
+  "src/Aine/Platform/Window/SDLWindow.cpp" "src/Aine/Core/Time.cpp" "src/Aine/Platform/Vulkan/VulkanContext.cpp" "src/Aine/Render/Renderer.cpp")
 
 set(AINE_ENGINE_HEADERS
     "include/Aine/Core/Application.h"
@@ -41,6 +41,13 @@ target_link_libraries(
         spdlog::spdlog
         SDL3::SDL3
         Vulkan::Vulkan
+)
+
+target_compile_definitions(
+    AineEngine
+
+    PUBLIC
+        $<$<CONFIG:Debug>:AINE_DEBUG>
 )
 
 source_group(TREE "${CMAKE_CURRENT_SOURCE_DIR}" FILES

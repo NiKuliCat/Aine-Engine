@@ -40,3 +40,10 @@ namespace Aine
 #define AINE_CLENT_WARN(...)				::Aine::Log::GetAppLogger()->warn(__VA_ARGS__)
 #define AINE_CLENT_ERROR(...)				::Aine::Log::GetAppLogger()->error(__VA_ARGS__)
 #define AINE_CLENT_CRITICAL(...)			::Aine::Log::GetAppLogger()->critical(__VA_ARGS__)
+
+
+#ifdef	AINE_DEBUG
+#define AINE_ASSERT(x,...) { if(!(x)){AINE_CORE_ERROR("Assert Failed : {0}",__VA_ARGS__); __debugbreak();}}
+#else
+#define AINE_ASSERT(x, ...)
+#endif

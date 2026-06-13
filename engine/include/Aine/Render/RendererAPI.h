@@ -2,7 +2,7 @@
 
 namespace Aine::Render
 {
-	enum GraphicsAPI
+	enum class GraphicsAPI
 	{
 		None = 0,
 		OpenGL,

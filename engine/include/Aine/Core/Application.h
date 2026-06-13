@@ -4,7 +4,7 @@
 #include <memory>
 #include "Core/Window.h"
 #include "Event/ApplicationEvent.h"
-
+#include "Render/Renderer.h"
 namespace Aine
 {
     struct ApplicationDesc
@@ -25,6 +25,7 @@ namespace Aine
         void InitWindow();
         void InitLogSystem();
         void InitTimeSystem();
+        void InitRenderer();
 
         void MainLoop();
         void Shutdown();
@@ -42,6 +43,8 @@ namespace Aine
         bool m_Active;
         ApplicationDesc m_Desc;
         Ref<Window> m_Window = nullptr;
+
+        Ref<Render::Renderer> m_Renderer = nullptr;
     };
 
 

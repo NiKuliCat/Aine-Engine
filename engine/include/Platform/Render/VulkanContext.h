@@ -1,5 +1,6 @@
 #pragma once
 #include <vulkan/vulkan.h>
+
 #include "Render/RHIContext.h"
 
 namespace Aine::Render
@@ -17,5 +18,16 @@ namespace Aine::Render
 		virtual void OnResize(uint32_t width, uint32_t height) override;
 		virtual void BeginFrame() override;
 		virtual void EndFrame() override;
+
+
+	private:
+		void CreateInstance();
+
+		
+
+	private:
+		void* m_WindowHandle = nullptr;
+		VkInstance m_Instance = VK_NULL_HANDLE;
+
 	};
 }

@@ -17,7 +17,7 @@ namespace Aine
 
         InitWindow();
         InitTimeSystem();
-
+        InitRenderer();
 
         MainLoop();
 
@@ -49,6 +49,10 @@ namespace Aine
         Time::Init();
     }
 
+    void Application::InitRenderer()
+    {
+        m_Renderer = CreateRef<Render::Renderer>(m_Window->GetHandle());
+    }
     void Application::MainLoop()
     {
         while (m_Active)
@@ -56,9 +60,9 @@ namespace Aine
             m_Window->OnUpdate();
             Time::OnUpdate();
 
-            float deltaTime = Time::GetDeltaTime();
-            float totalTime = Time::GetTotalTime();
-            AINE_CORE_DEBUG("delta : {0},   total : {1}",deltaTime,totalTime);
+            //float deltaTime = Time::GetDeltaTime();
+            //float totalTime = Time::GetTotalTime();
+            //AINE_CORE_DEBUG("delta : {0},   total : {1}",deltaTime,totalTime);
         }
     }
 
