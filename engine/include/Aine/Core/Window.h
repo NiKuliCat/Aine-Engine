@@ -2,7 +2,9 @@
 
 #include <string>
 #include <cstdint>
+#include <functional>
 #include "Core/Core.h"
+#include "Event/Event.h"
 namespace Aine
 {
 
@@ -14,19 +16,10 @@ namespace Aine
 		bool VSync = true;
 	};
 
-	struct WindowProps
-	{
-		std::string Title;
-		uint32_t Width;
-		uint32_t Height;
-		bool VSync;
-	};
-
-
-
 	class Window
 	{
 	public:
+		using EventCallbackFn = std::function<void(Event&)>;
 		virtual ~Window() = default;
 
 	public:
@@ -37,6 +30,7 @@ namespace Aine
 		virtual uint32_t GetWidth() const = 0;
 		virtual uint32_t GetHeight() const = 0;
 
+		virtual void SetEventCallback(const EventCallbackFn& callback) = 0;
 		static Ref<Window> Create(const WindowCreateInfo& info);
 
 	};

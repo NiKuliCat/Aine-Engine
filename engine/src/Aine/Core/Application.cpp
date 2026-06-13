@@ -34,23 +34,46 @@ namespace Aine
         createInfo.Height = m_Desc.Height;
         createInfo.VSync = true;
         m_Window = Window::Create(createInfo);
+
+        m_Window->SetEventCallback(BIND_EVENT_FUNC(Application::OnEvent));
     }
 
     void Application::InitLogSystem()
     {
         Log::Init();
-        AINE_CORE_INFO("log system init");
     }
 
     void Application::MainLoop()
     {
         while (m_Active)
         {
+            m_Window->OnUpdate();
         }
     }
 
     void Application::Shutdown()
     {
+        if (m_Window)
+        {
+            m_Window->OnDestroy();
+        }
+    }
+
+    void Application::OnEvent(Event& event)
+    {
+        EventDisPatcher dispatcher(event);
+        dispatcher.Dispatcher<WindowCloseEvent>(BIND_EVENT_FUNC(Application::OnWindowClosed));
+        dispatcher.Dispatcher<WindowResizeEvent>(BIND_EVENT_FUNC(Application::OnWindowResize));
+    }
+    bool Application::OnWindowClosed(WindowCloseEvent& event)
+    {
+        m_Active = false;
+        return true;
+    }
+    bool Application::OnWindowResize(WindowResizeEvent& event)
+    {
+       // AINE_CORE_TRACE(event.ToString());
+        return false;
     }
 
 

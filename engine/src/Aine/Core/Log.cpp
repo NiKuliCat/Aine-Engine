@@ -14,5 +14,7 @@ namespace Aine
 
 		s_AppLogger = spdlog::stderr_color_mt("EDITOR");
 		s_AppLogger->set_level(spdlog::level::trace);
+
+		AINE_CORE_INFO("log system initialized !");
 	}
 }

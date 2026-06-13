@@ -9,7 +9,7 @@ set(AINE_ENGINE_HEADERS
     "include/Aine/Core/Core.h"
     "include/Aine/Core/Log.h"
     "include/Aine/Core/Window.h" 
-    "include/Platform/Window/SDLWindow.h")
+    "include/Platform/Window/SDLWindow.h" "include/Aine/Event/Event.h" "include/Aine/Event/ApplicationEvent.h")
 
 add_library(AineEngine STATIC)
 add_library(Aine::Engine ALIAS AineEngine)

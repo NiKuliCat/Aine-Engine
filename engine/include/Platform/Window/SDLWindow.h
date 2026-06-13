@@ -19,11 +19,23 @@ namespace Aine
 		virtual uint32_t GetWidth() const override { return m_WindowProps.Width; };
 		virtual uint32_t GetHeight() const override { return m_WindowProps.Height; };
 
+		inline void SetEventCallback(const EventCallbackFn& callback) override { m_WindowProps.EventCallback = callback; }
+
 	private:
 		void Init();
-
+		void HandleSDLEvent(const SDL_Event& event);
 
 	private:
+
+		struct WindowProps
+		{
+			std::string Title;
+			uint32_t Width;
+			uint32_t Height;
+			bool VSync;
+			EventCallbackFn EventCallback;
+		};
+
 		WindowProps m_WindowProps;
 		SDL_Window* m_WindowHandle = nullptr;
 

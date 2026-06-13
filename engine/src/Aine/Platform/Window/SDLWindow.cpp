@@ -1,4 +1,5 @@
 #include "Window/SDLWindow.h"
+#include "Event/ApplicationEvent.h"
 #include "Core/Log.h"
 namespace Aine
 {
@@ -35,6 +36,8 @@ namespace Aine
 		{
 			AINE_CORE_ERROR(SDL_GetError());
 		}
+
+		AINE_CORE_INFO("main window initialized !");
 	}
 
 
@@ -49,7 +52,11 @@ namespace Aine
 	}
 	void SDLWindow::OnUpdate()
 	{
-
+		SDL_Event event;
+		while (SDL_PollEvent(&event))
+		{
+			HandleSDLEvent(event);
+		}
 	}
 	void SDLWindow::OnDestroy()
 	{
@@ -59,8 +66,38 @@ namespace Aine
 			m_WindowHandle = nullptr;
 		}
 		SDL_Quit();
+
+		AINE_CORE_INFO("main window destroy !");
 	}
 
+
+	void SDLWindow::HandleSDLEvent(const SDL_Event& event)
+	{
+		switch (event.type)
+		{
+			case SDL_EVENT_WINDOW_CLOSE_REQUESTED:
+			{
+				WindowCloseEvent closeEvent;
+				m_WindowProps.EventCallback(closeEvent);
+				break;
+			}
+
+			case SDL_EVENT_WINDOW_RESIZED:
+			{
+				uint32_t w = static_cast<uint32_t>(event.window.data1);
+				uint32_t h = static_cast<uint32_t>(event.window.data2);
+				m_WindowProps.Width = w;
+				m_WindowProps.Height = h;
+
+				WindowResizeEvent resizeEvent(w, h);
+				m_WindowProps.EventCallback(resizeEvent);
+				break;
+			}
+
+			default:
+				break;
+		}
+	}
 
 
 

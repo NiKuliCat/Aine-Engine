@@ -3,7 +3,7 @@
 #include <cstdint>
 #include <memory>
 #include "Core/Window.h"
-
+#include "Event/ApplicationEvent.h"
 namespace Aine
 {
     struct ApplicationDesc
@@ -29,6 +29,12 @@ namespace Aine
         void Shutdown();
 
 
+        void OnEvent(Event& event);
+
+
+    private:
+        bool OnWindowClosed(WindowCloseEvent& event);
+        bool OnWindowResize(WindowResizeEvent& event);
 
     private:
 
