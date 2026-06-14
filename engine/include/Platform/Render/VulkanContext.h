@@ -25,6 +25,8 @@ namespace Aine::Render
 		void CreateSurface();
 		void CreateLogicalDevice();
 		void CreateSwapchain();
+		void CreateSwapchainImageViews();
+
 	private:
 		SDL_Window* m_WindowHandle = nullptr;
 		VkInstance m_Instance = VK_NULL_HANDLE;
