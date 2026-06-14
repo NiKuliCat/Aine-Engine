@@ -22,6 +22,7 @@ namespace Aine::Render
 		CreateSurface();
 
 		m_PhysicalDevice = PickPhysicalDevice(m_Instance, m_Surface);
+		CreateLogicalDevice();
 
 	}
 	void VulkanContext::OnDestroy()
@@ -70,6 +71,74 @@ namespace Aine::Render
 	void VulkanContext::CreateSurface()
 	{
 		AINE_ASSERT(SDL_Vulkan_CreateSurface(m_WindowHandle, m_Instance, nullptr, &m_Surface), SDL_GetError());
+	}
+
+	void VulkanContext::CreateLogicalDevice()
+	{
+
+		//优先获取一份可用的图形队列和呈现队列
+		VKQueueFamilyIndices indices = FindQueueFamilies(m_PhysicalDevice,m_Surface);
+
+		m_GraphicsQueueFamilyIndex = indices.GraphicsFamily.value();
+		m_PresentQueueFamilyIndex = indices.PresentFamily.value();
+
+		//图形队列和呈现队列可能是同一族的，这里为了去重，避免重复创建同一个队列族
+		std::set<uint32_t> uniqueQueueFamilies = {
+			indices.GraphicsFamily.value(),
+			indices.PresentFamily.value()
+		};
+
+		float queuePriority = 1.0f;
+
+		std::vector<VkDeviceQueueCreateInfo> queueCreateInfos;
+
+		for (uint32_t queueFamily : uniqueQueueFamilies)
+		{
+			VkDeviceQueueCreateInfo queueCreateInfo{};
+			queueCreateInfo.sType = VK_STRUCTURE_TYPE_DEVICE_QUEUE_CREATE_INFO;
+			queueCreateInfo.queueFamilyIndex = queueFamily;
+			queueCreateInfo.queueCount = 1;
+			queueCreateInfo.pQueuePriorities = &queuePriority;
+			queueCreateInfos.push_back(queueCreateInfo);
+		}
+
+		VkPhysicalDeviceFeatures2 deviceFeatures2{};
+		deviceFeatures2.sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_FEATURES_2;
+
+		VkPhysicalDeviceVulkan11Features vulkan11Features{};
+		vulkan11Features.sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_VULKAN_1_1_FEATURES;
+
+		VkPhysicalDeviceVulkan13Features vulkan13Features{};
+		vulkan13Features.sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_VULKAN_1_3_FEATURES;
+		deviceFeatures2.pNext = &vulkan11Features;
+		vulkan11Features.pNext = &vulkan13Features;
+
+		vkGetPhysicalDeviceFeatures2(m_PhysicalDevice, &deviceFeatures2);
+
+		AINE_ASSERT(vulkan11Features.shaderDrawParameters == VK_TRUE, "vulkan physical device does not support shaderDrawParameters !");
+		AINE_ASSERT(vulkan13Features.dynamicRendering == VK_TRUE, "vulkan physical device does not support dynamicRendering !");
+
+		vulkan11Features.shaderDrawParameters = VK_TRUE;
+		vulkan13Features.dynamicRendering = VK_TRUE;
+
+
+		VkDeviceCreateInfo createInfo{};
+		createInfo.sType = VK_STRUCTURE_TYPE_DEVICE_CREATE_INFO;
+		createInfo.pNext = &vulkan11Features;
+		createInfo.queueCreateInfoCount = static_cast<uint32_t>(queueCreateInfos.size());
+		createInfo.pQueueCreateInfos = queueCreateInfos.data();
+		createInfo.pEnabledFeatures = nullptr;
+		createInfo.enabledExtensionCount = static_cast<uint32_t>(s_DeviceExtensions.size());
+		createInfo.ppEnabledExtensionNames = s_DeviceExtensions.data();
+
+		createInfo.enabledLayerCount = static_cast<uint32_t>(s_ValidationLayers.size());
+		createInfo.ppEnabledLayerNames = s_ValidationLayers.data();
+
+
+		VKCheck(vkCreateDevice(m_PhysicalDevice, &createInfo, nullptr, &m_LogicalDevice), "Failed to create Vulkan logical device !");
+
+		vkGetDeviceQueue(m_LogicalDevice, indices.GraphicsFamily.value(), 0, &m_GraphicsQueue);
+		vkGetDeviceQueue(m_LogicalDevice, indices.PresentFamily.value(), 0, &m_PresentQueue);
 	}
 
 
