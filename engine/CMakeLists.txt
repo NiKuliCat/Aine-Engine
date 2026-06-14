@@ -12,7 +12,7 @@ set(AINE_ENGINE_HEADERS
     "include/Platform/Window/SDLWindow.h" 
     "include/Aine/Event/Event.h" 
     "include/Aine/Event/ApplicationEvent.h" 
-    "include/Aine/Core/Time.h" "include/Aine/Render/Renderer.h" "include/Platform/Render/VulkanContext.h" "include/Aine/Render/RHIContext.h")
+    "include/Aine/Core/Time.h" "include/Aine/Render/Renderer.h" "include/Platform/Render/VulkanContext.h" "include/Aine/Render/RHIContext.h" "include/Platform/Render/VulkanUtils.h")
 
 add_library(AineEngine STATIC)
 add_library(Aine::Engine ALIAS AineEngine)
