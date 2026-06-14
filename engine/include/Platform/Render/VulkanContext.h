@@ -31,7 +31,12 @@ namespace Aine::Render
 		void CreateSyncObjects();
 
 		void CleanupSwapchain();
+		void RecreateSwapchain();
 		void WaitIdle();
+
+		void BeginCommandBuffer(VkCommandBuffer cmd);
+		void EndCommandBuffer(VkCommandBuffer cmd);
+
 
 	private:
 		SDL_Window* m_WindowHandle = nullptr;
@@ -57,6 +62,9 @@ namespace Aine::Render
 		std::vector<VkFence> m_ImagesInFlight;
 
 
+		uint32_t m_CurrentFrame = 0;
+		uint32_t m_CurrentImageIndex = 0;
+
 		VkQueue m_GraphicsQueue = VK_NULL_HANDLE;
 		VkQueue m_PresentQueue  = VK_NULL_HANDLE;
 		
@@ -64,7 +72,8 @@ namespace Aine::Render
 		uint32_t m_GraphicsQueueFamilyIndex = 0;
 		uint32_t m_PresentQueueFamilyIndex = 0;
 
-
+		bool m_NeedRebuildFramebuffer = false;
+		bool m_FrameStarted = false;
 
 		static constexpr uint32_t FramesInFlight = 2;
 	};

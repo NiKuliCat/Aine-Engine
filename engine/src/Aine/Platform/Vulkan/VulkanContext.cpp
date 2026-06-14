@@ -81,12 +81,95 @@ namespace Aine::Render
 	}
 	void VulkanContext::OnResize(uint32_t width, uint32_t height)
 	{
+		if (width == 0 || height == 0)
+		{
+			return;
+		}
+
+		m_NeedRebuildFramebuffer = true;
 	}
 	void VulkanContext::BeginFrame()
 	{
+		AINE_ASSERT(!m_FrameStarted, "BeginFrame called while frame is already started");
+
+		vkWaitForFences(m_LogicalDevice, 1, &m_InFlightFences[m_CurrentFrame], VK_TRUE, UINT64_MAX);
+
+		VkResult result = vkAcquireNextImageKHR(m_LogicalDevice, m_Swapchain, UINT64_MAX, m_ImageAvailableSemaphores[m_CurrentFrame], VK_NULL_HANDLE, &m_CurrentImageIndex);
+
+		// 窗口尺寸变化时，Acquire 也可能返回 SUBOPTIMAL；这类情况和 OUT_OF_DATE 一样走 swapchain 重建。
+		if (result == VK_ERROR_OUT_OF_DATE_KHR || result == VK_SUBOPTIMAL_KHR)
+		{
+			RecreateSwapchain();
+			return;
+		}
+
+		VKCheck(result, "Faild to acquire swapchain image");
+		if (m_ImagesInFlight[m_CurrentImageIndex] != VK_NULL_HANDLE)
+		{
+			vkWaitForFences(m_LogicalDevice, 1, &m_ImagesInFlight[m_CurrentImageIndex], VK_TRUE, UINT64_MAX);
+		}
+
+		m_ImagesInFlight[m_CurrentImageIndex] = m_InFlightFences[m_CurrentFrame];
+
+		vkResetFences(m_LogicalDevice, 1, &m_InFlightFences[m_CurrentFrame]);
+
+		VkCommandBuffer cmd = m_CommandBuffers[m_CurrentFrame];
+
+		vkResetCommandBuffer(cmd, 0);
+		BeginCommandBuffer(cmd);
+
+		m_FrameStarted = true;
+
 	}
 	void VulkanContext::EndFrame()
 	{
+		AINE_ASSERT(m_FrameStarted, "EndFrame called without BeginFrame");
+
+		VkCommandBuffer cmd = m_CommandBuffers[m_CurrentFrame];
+		EndCommandBuffer(cmd);
+
+		VkSemaphore waitSemaphores[] = { m_ImageAvailableSemaphores[m_CurrentFrame] };
+		VkPipelineStageFlags waitStages[] = { VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT };
+
+		VkSemaphore renderFinishSemaphores = m_RenderFinishedSemaphores[m_CurrentImageIndex];
+		VkSemaphore signalSemaphores[] = { renderFinishSemaphores };
+
+		VkSubmitInfo submitInfo{};
+		submitInfo.sType = VK_STRUCTURE_TYPE_SUBMIT_INFO;
+		submitInfo.waitSemaphoreCount = 1;
+		submitInfo.pWaitSemaphores = waitSemaphores;
+		submitInfo.pWaitDstStageMask = waitStages;
+		submitInfo.commandBufferCount = 1;
+		submitInfo.pCommandBuffers = &cmd;
+		submitInfo.signalSemaphoreCount = 1;
+		submitInfo.pSignalSemaphores = signalSemaphores;
+
+		VKCheck(vkQueueSubmit(m_GraphicsQueue, 1, &submitInfo, m_InFlightFences[m_CurrentFrame]), "Failed to submit queue !");
+
+
+		VkPresentInfoKHR presentInfo{};
+		presentInfo.sType = VK_STRUCTURE_TYPE_PRESENT_INFO_KHR;
+		presentInfo.waitSemaphoreCount = 1;
+		presentInfo.pWaitSemaphores = signalSemaphores;
+		presentInfo.swapchainCount = 1;
+		presentInfo.pSwapchains = &m_Swapchain;
+		presentInfo.pImageIndices = &m_CurrentImageIndex;
+
+		VkResult result = vkQueuePresentKHR(m_PresentQueue, &presentInfo);
+
+		m_FrameStarted = false;
+
+		if (result == VK_ERROR_OUT_OF_DATE_KHR || result == VK_SUBOPTIMAL_KHR || m_NeedRebuildFramebuffer)
+		{
+			RecreateSwapchain();
+			m_NeedRebuildFramebuffer = false;
+		}
+		else
+		{
+			VKCheck(result, "Failed to present Vulkan swapchain image");
+		}
+
+		m_CurrentFrame = (m_CurrentFrame + 1) % FramesInFlight;
 	}
 	void VulkanContext::CreateInstance()
 	{
@@ -249,6 +332,8 @@ namespace Aine::Render
 
 		m_SwapchainImageFormat = surfaceFormat.format;
 		m_SwapchainExtent = extent;
+
+		m_NeedRebuildFramebuffer = false;
 	}
 
 	void VulkanContext::CreateSwapchainImageViews()
@@ -342,10 +427,39 @@ namespace Aine::Render
 		}
 	}
 
+	void VulkanContext::RecreateSwapchain()
+	{
+		int width = 0;
+		int height = 0;
+
+		SDL_GetWindowSizeInPixels(m_WindowHandle, &width, &height);
+
+		vkDeviceWaitIdle(m_LogicalDevice);
+
+		CleanupSwapchain();
+
+		CreateSwapchain();
+		CreateSwapchainImageViews();
+	}
+
 	void VulkanContext::WaitIdle()
 	{
 		if (m_LogicalDevice != VK_NULL_HANDLE)
 			vkDeviceWaitIdle(m_LogicalDevice);
+	}
+
+	void VulkanContext::BeginCommandBuffer(VkCommandBuffer cmd)
+	{
+		VkCommandBufferBeginInfo beginInfo{};
+		beginInfo.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_BEGIN_INFO;
+		beginInfo.flags = 0;
+
+		VKCheck(vkBeginCommandBuffer(cmd, &beginInfo), "Failed to begin vulkan command buffer !");
+	}
+
+	void VulkanContext::EndCommandBuffer(VkCommandBuffer cmd)
+	{
+		VKCheck(vkEndCommandBuffer(cmd), "Failed to end vulkan command buffer !");
 	}
 
 

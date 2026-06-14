@@ -261,7 +261,6 @@ namespace Aine::Render
 		int height = 0;
 		if (!SDL_GetWindowSizeInPixels(windowHanle, &width, &height))
 		{
-			// 失败时你可以自己处理错误，这里只是兜底
 			width = 1;
 			height = 1;
 		}
