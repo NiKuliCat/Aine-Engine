@@ -28,9 +28,56 @@ namespace Aine::Render
 
 		CreateCommandPool();
 		CreateCommandBuffers();
+		CreateSyncObjects();
 	}
 	void VulkanContext::OnDestroy()
 	{
+		if (m_Instance == VK_NULL_HANDLE)
+		{
+			return;
+		}
+
+
+		WaitIdle();
+
+
+		for (size_t i = 0; i < m_ImageAvailableSemaphores.size(); ++i)
+		{
+			vkDestroySemaphore(m_LogicalDevice, m_ImageAvailableSemaphores[i], nullptr);
+			vkDestroyFence(m_LogicalDevice, m_InFlightFences[i], nullptr);
+		}
+
+		for (VkSemaphore semaphore : m_RenderFinishedSemaphores)
+			vkDestroySemaphore(m_LogicalDevice, semaphore, nullptr);
+
+		m_ImageAvailableSemaphores.clear();
+		m_RenderFinishedSemaphores.clear();
+		m_InFlightFences.clear();
+		m_ImagesInFlight.clear();
+
+		if (m_CommandPool != VK_NULL_HANDLE)
+		{
+			vkDestroyCommandPool(m_LogicalDevice, m_CommandPool, nullptr);
+			m_CommandPool = VK_NULL_HANDLE;
+		}
+
+		CleanupSwapchain();
+
+		if (m_LogicalDevice != VK_NULL_HANDLE)
+		{
+			vkDestroyDevice(m_LogicalDevice, nullptr);
+			m_LogicalDevice = VK_NULL_HANDLE;
+		}
+
+		if (m_Surface != VK_NULL_HANDLE)
+		{
+			vkDestroySurfaceKHR(m_Instance, m_Surface, nullptr);
+			m_Surface = VK_NULL_HANDLE;
+		}
+
+		vkDestroyInstance(m_Instance, nullptr);
+		m_Instance = VK_NULL_HANDLE;
+
 	}
 	void VulkanContext::OnResize(uint32_t width, uint32_t height)
 	{
@@ -253,6 +300,52 @@ namespace Aine::Render
 		
 
 		VKCheck(vkAllocateCommandBuffers(m_LogicalDevice, &allocInfo, m_CommandBuffers.data()), "Faild to create command buffers !");
+	}
+
+	void VulkanContext::CreateSyncObjects()
+	{
+		m_ImageAvailableSemaphores.resize(FramesInFlight);
+		m_RenderFinishedSemaphores.resize(m_SwapchainImages.size());
+		m_InFlightFences.resize(FramesInFlight);
+
+		VkSemaphoreCreateInfo semaphoreInfo{};
+		semaphoreInfo.sType = VK_STRUCTURE_TYPE_SEMAPHORE_CREATE_INFO;
+
+		VkFenceCreateInfo fenceInfo{};
+		fenceInfo.sType = VK_STRUCTURE_TYPE_FENCE_CREATE_INFO;
+		fenceInfo.flags = VK_FENCE_CREATE_SIGNALED_BIT;
+
+		for (uint32_t i = 0; i < FramesInFlight; ++i)
+		{
+			VKCheck(vkCreateSemaphore(m_LogicalDevice , &semaphoreInfo, nullptr, &m_ImageAvailableSemaphores[i]), "Failed to create image available semaphore");
+			VKCheck(vkCreateFence(m_LogicalDevice, &fenceInfo, nullptr, &m_InFlightFences[i]), "Failed to create in-flight fence");
+		}
+
+		for (size_t i = 0; i < m_RenderFinishedSemaphores.size(); ++i)
+			VKCheck(vkCreateSemaphore(m_LogicalDevice, &semaphoreInfo, nullptr, &m_RenderFinishedSemaphores[i]), "Failed to create render finished semaphore");
+	}
+
+	void VulkanContext::CleanupSwapchain()
+	{
+		for (VkImageView imageView : m_SwapchainImageViews)
+			vkDestroyImageView(m_LogicalDevice, imageView, nullptr);
+
+		m_SwapchainImageViews.clear();
+		m_SwapchainImages.clear();
+		m_SwapchainImageLayouts.clear();
+		m_ImagesInFlight.clear();
+
+		if (m_Swapchain != VK_NULL_HANDLE)
+		{
+			vkDestroySwapchainKHR(m_LogicalDevice, m_Swapchain, nullptr);
+			m_Swapchain = VK_NULL_HANDLE;
+		}
+	}
+
+	void VulkanContext::WaitIdle()
+	{
+		if (m_LogicalDevice != VK_NULL_HANDLE)
+			vkDeviceWaitIdle(m_LogicalDevice);
 	}
 
 

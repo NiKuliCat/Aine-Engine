@@ -28,6 +28,10 @@ namespace Aine::Render
 		void CreateSwapchainImageViews();
 		void CreateCommandPool();
 		void CreateCommandBuffers();
+		void CreateSyncObjects();
+
+		void CleanupSwapchain();
+		void WaitIdle();
 
 	private:
 		SDL_Window* m_WindowHandle = nullptr;
@@ -47,6 +51,12 @@ namespace Aine::Render
 		VkCommandPool m_CommandPool = VK_NULL_HANDLE;
 		std::vector<VkCommandBuffer> m_CommandBuffers;
 
+		std::vector<VkSemaphore> m_ImageAvailableSemaphores;
+		std::vector<VkSemaphore> m_RenderFinishedSemaphores;
+		std::vector<VkFence> m_InFlightFences;
+		std::vector<VkFence> m_ImagesInFlight;
+
+
 		VkQueue m_GraphicsQueue = VK_NULL_HANDLE;
 		VkQueue m_PresentQueue  = VK_NULL_HANDLE;
 		
@@ -54,8 +64,6 @@ namespace Aine::Render
 		uint32_t m_GraphicsQueueFamilyIndex = 0;
 		uint32_t m_PresentQueueFamilyIndex = 0;
 
-
-		std::vector<VkFence> m_ImagesInFlight;
 
 
 		static constexpr uint32_t FramesInFlight = 2;

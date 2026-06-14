@@ -10,6 +10,7 @@ namespace Aine::Render
 	public:
 		Renderer(void* windowHandle);
 
+		void OnDestroy();
 
 	private:
 		static GraphicsAPI s_CurrentAPI;

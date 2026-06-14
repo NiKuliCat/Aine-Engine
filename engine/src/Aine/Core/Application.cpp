@@ -70,6 +70,7 @@ namespace Aine
     {
         if (m_Window)
         {
+            m_Renderer->OnDestroy();
             m_Window->OnDestroy();
         }
     }

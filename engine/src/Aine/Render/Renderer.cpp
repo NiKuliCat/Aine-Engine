@@ -28,4 +28,13 @@ namespace Aine::Render
 
 		AINE_CORE_INFO("create renderer sucessfully !");
 	}
+	void Renderer::OnDestroy()
+	{
+		if (m_Context)
+		{
+			m_Context->OnDestroy();
+		}
+
+		AINE_CORE_INFO("renderer destroy !");
+	}
 }
