@@ -26,6 +26,8 @@ namespace Aine::Render
 		void CreateLogicalDevice();
 		void CreateSwapchain();
 		void CreateSwapchainImageViews();
+		void CreateCommandPool();
+		void CreateCommandBuffers();
 
 	private:
 		SDL_Window* m_WindowHandle = nullptr;
@@ -42,6 +44,9 @@ namespace Aine::Render
 		VkFormat m_SwapchainImageFormat = VK_FORMAT_UNDEFINED;
 		VkExtent2D m_SwapchainExtent{};
 
+		VkCommandPool m_CommandPool = VK_NULL_HANDLE;
+		std::vector<VkCommandBuffer> m_CommandBuffers;
+
 		VkQueue m_GraphicsQueue = VK_NULL_HANDLE;
 		VkQueue m_PresentQueue  = VK_NULL_HANDLE;
 		
@@ -51,5 +56,8 @@ namespace Aine::Render
 
 
 		std::vector<VkFence> m_ImagesInFlight;
+
+
+		static constexpr uint32_t FramesInFlight = 2;
 	};
 }

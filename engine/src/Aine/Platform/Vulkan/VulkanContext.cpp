@@ -25,6 +25,9 @@ namespace Aine::Render
 		CreateLogicalDevice();
 		CreateSwapchain();
 		CreateSwapchainImageViews();
+
+		CreateCommandPool();
+		CreateCommandBuffers();
 	}
 	void VulkanContext::OnDestroy()
 	{
@@ -226,6 +229,30 @@ namespace Aine::Render
 			VKCheck(vkCreateImageView(m_LogicalDevice, &createInfo, nullptr, &m_SwapchainImageViews[i]),"Failed to create Vulkan swapchain image view");
 		}
 
+	}
+
+	void VulkanContext::CreateCommandPool()
+	{
+		VkCommandPoolCreateInfo createInfo{};
+		createInfo.sType = VK_STRUCTURE_TYPE_COMMAND_POOL_CREATE_INFO;
+		createInfo.flags = VK_COMMAND_POOL_CREATE_RESET_COMMAND_BUFFER_BIT;
+		createInfo.queueFamilyIndex = m_GraphicsQueueFamilyIndex;
+
+		VKCheck(vkCreateCommandPool(m_LogicalDevice, &createInfo, nullptr, &m_CommandPool), "Faild to create command pool !");
+	}
+
+	void VulkanContext::CreateCommandBuffers()
+	{
+		m_CommandBuffers.resize(FramesInFlight);
+
+		VkCommandBufferAllocateInfo allocInfo{};
+		allocInfo.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_ALLOCATE_INFO;
+		allocInfo.commandPool = m_CommandPool;
+		allocInfo.commandBufferCount = static_cast<uint32_t>(m_CommandBuffers.size());
+		allocInfo.level = VK_COMMAND_BUFFER_LEVEL_PRIMARY;
+		
+
+		VKCheck(vkAllocateCommandBuffers(m_LogicalDevice, &allocInfo, m_CommandBuffers.data()), "Faild to create command buffers !");
 	}
 
 
