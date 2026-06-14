@@ -36,7 +36,8 @@ target_include_directories(
 target_link_libraries(
     AineEngine
     PUBLIC
-        Aine::Warnings   
+        Aine::Warnings
+        ImGui::ImGui
     PRIVATE
         spdlog::spdlog
         SDL3::SDL3
