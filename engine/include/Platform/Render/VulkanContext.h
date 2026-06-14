@@ -1,8 +1,8 @@
 #pragma once
 #include <vulkan/vulkan.h>
+#include <SDL3/SDL.h>
 
 #include "Render/RHIContext.h"
-
 namespace Aine::Render
 {
 	class VulkanContext :public RHIContext
@@ -22,13 +22,12 @@ namespace Aine::Render
 
 	private:
 		void CreateInstance();
-
-		
-
+		void CreateSurface();
 	private:
-		void* m_WindowHandle = nullptr;
+		SDL_Window* m_WindowHandle = nullptr;
 		VkInstance m_Instance = VK_NULL_HANDLE;
 
+		VkSurfaceKHR m_Surface = VK_NULL_HANDLE;
 		VkPhysicalDevice m_PhysicalDevice = VK_NULL_HANDLE;
 
 	};

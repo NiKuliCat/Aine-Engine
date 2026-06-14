@@ -1,14 +1,8 @@
 #include "Render/VulkanContext.h"
 #include "Render/VulkanUtils.h"
-
+#include <SDL3/SDL_vulkan.h>
 namespace Aine::Render
 {
-
-	namespace
-	{
-	
-	}
-
 
 	VulkanContext::VulkanContext()
 	{
@@ -22,9 +16,13 @@ namespace Aine::Render
 
 	void VulkanContext::Init(void* windowHandle)
 	{
-		m_WindowHandle = windowHandle;
+		m_WindowHandle = static_cast<SDL_Window*>(windowHandle);
 
 		CreateInstance();
+		CreateSurface();
+
+		m_PhysicalDevice = PickPhysicalDevice(m_Instance, m_Surface);
+
 	}
 	void VulkanContext::OnDestroy()
 	{
@@ -68,5 +66,12 @@ namespace Aine::Render
 
 		VKCheck(vkCreateInstance(&createInfo, nullptr, &m_Instance), "Failed to create vulkan instance");
 	}
+
+	void VulkanContext::CreateSurface()
+	{
+		AINE_ASSERT(SDL_Vulkan_CreateSurface(m_WindowHandle, m_Instance, nullptr, &m_Surface), SDL_GetError());
+	}
+
+
 
 }
