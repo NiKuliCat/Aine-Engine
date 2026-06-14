@@ -9,7 +9,6 @@ namespace AineEditor
         EditorApp();
         ~EditorApp() {}
 
-
     };
 
         

@@ -9,9 +9,9 @@ namespace Aine::Render
 	{
 	public:
 		Renderer(void* windowHandle);
-
 		void OnDestroy();
 
+		Ref<RHIContext> GetContext() { return m_Context; }
 	private:
 		static GraphicsAPI s_CurrentAPI;
 

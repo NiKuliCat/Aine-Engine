@@ -1,8 +1,12 @@
 set(AINE_ENGINE_SOURCES 
     "src/Aine/Core/Application.cpp"
     "src/Aine/Core/Log.cpp"
-    
-  "src/Aine/Platform/Window/SDLWindow.cpp" "src/Aine/Core/Time.cpp" "src/Aine/Platform/Vulkan/VulkanContext.cpp" "src/Aine/Render/Renderer.cpp")
+    "src/Aine/Platform/Window/SDLWindow.cpp" 
+    "src/Aine/Core/Time.cpp" 
+    "src/Aine/Platform/Vulkan/VulkanContext.cpp" 
+    "src/Aine/Render/Renderer.cpp" 
+    "src/Aine/Core/Layer.cpp" 
+    "src/Aine/ImGui/ImGuiLayer.cpp")
 
 set(AINE_ENGINE_HEADERS
     "include/Aine/Core/Application.h"
@@ -12,7 +16,13 @@ set(AINE_ENGINE_HEADERS
     "include/Platform/Window/SDLWindow.h" 
     "include/Aine/Event/Event.h" 
     "include/Aine/Event/ApplicationEvent.h" 
-    "include/Aine/Core/Time.h" "include/Aine/Render/Renderer.h" "include/Platform/Render/VulkanContext.h" "include/Aine/Render/RHIContext.h" "include/Platform/Render/VulkanUtils.h")
+    "include/Aine/Core/Time.h" 
+    "include/Aine/Render/Renderer.h" 
+    "include/Platform/Render/VulkanContext.h" 
+    "include/Aine/Render/RHIContext.h" 
+    "include/Platform/Render/VulkanUtils.h" 
+    "include/Aine/Core/Layer.h" 
+    "include/Aine/ImGui/ImGuiLayer.h")
 
 add_library(AineEngine STATIC)
 add_library(Aine::Engine ALIAS AineEngine)

@@ -15,6 +15,34 @@ namespace Aine
 	}
 
 
+	void SDLWindow::DispatchSDLEvent(const SDL_Event& event)
+	{
+		switch (event.type)
+		{
+			case SDL_EVENT_WINDOW_CLOSE_REQUESTED:
+			{
+				WindowCloseEvent closeEvent;
+				m_WindowProps.EventCallback(closeEvent);
+				break;
+			}
+
+			case SDL_EVENT_WINDOW_RESIZED:
+			{
+				uint32_t w = static_cast<uint32_t>(event.window.data1);
+				uint32_t h = static_cast<uint32_t>(event.window.data2);
+				m_WindowProps.Width = w;
+				m_WindowProps.Height = h;
+
+				WindowResizeEvent resizeEvent(w, h);
+				m_WindowProps.EventCallback(resizeEvent);
+				break;
+			}
+
+			default:
+				break;
+		}
+	}
+
 	void SDLWindow::Init()
 	{
 		if (!s_SDLInitialized)
@@ -48,15 +76,9 @@ namespace Aine
 
 	void SDLWindow::OnCreate()
 	{
-
 	}
 	void SDLWindow::OnUpdate()
 	{
-		SDL_Event event;
-		while (SDL_PollEvent(&event))
-		{
-			HandleSDLEvent(event);
-		}
 	}
 	void SDLWindow::OnDestroy()
 	{
@@ -70,34 +92,6 @@ namespace Aine
 		AINE_CORE_INFO("main window destroy !");
 	}
 
-
-	void SDLWindow::HandleSDLEvent(const SDL_Event& event)
-	{
-		switch (event.type)
-		{
-			case SDL_EVENT_WINDOW_CLOSE_REQUESTED:
-			{
-				WindowCloseEvent closeEvent;
-				m_WindowProps.EventCallback(closeEvent);
-				break;
-			}
-
-			case SDL_EVENT_WINDOW_RESIZED:
-			{
-				uint32_t w = static_cast<uint32_t>(event.window.data1);
-				uint32_t h = static_cast<uint32_t>(event.window.data2);
-				m_WindowProps.Width = w;
-				m_WindowProps.Height = h;
-
-				WindowResizeEvent resizeEvent(w, h);
-				m_WindowProps.EventCallback(resizeEvent);
-				break;
-			}
-
-			default:
-				break;
-		}
-	}
 
 
 

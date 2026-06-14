@@ -19,6 +19,31 @@ namespace Aine::Render
 		virtual void BeginFrame() override;
 		virtual void EndFrame() override;
 
+	public:
+		VkInstance GetInstance() { return m_Instance; }
+		VkPhysicalDevice GetPhysicalDevice() { return m_PhysicalDevice; }
+		VkDevice GetLogicalDevice() { return m_LogicalDevice; }
+
+		
+		uint32_t GetGraphicsQueueFamilyIndex() { return m_GraphicsQueueFamilyIndex; }
+		uint32_t GetPresentQueueFamilyIndex() { return m_PresentQueueFamilyIndex; }
+
+		VkQueue GetGraphicsQueue()	{return m_GraphicsQueue;}
+		VkQueue GetPresentQueue()	{return m_PresentQueue;}
+
+		VkSwapchainKHR GetSwapchain() const { return m_Swapchain; }
+		VkFormat GetSwapchainImageFormat() const { return m_SwapchainImageFormat; }
+		VkExtent2D GetSwapchainExtent() const { return m_SwapchainExtent; }
+
+		const std::vector<VkImage>& GetSwapchainImages() const { return m_SwapchainImages; }
+		const std::vector<VkImageView>& GetSwapchainImageViews() const { return m_SwapchainImageViews; }
+
+		VkCommandPool GetCommandPool() const { return m_CommandPool; }
+		VkCommandBuffer GetCurrentCommandBuffer() const { return m_CommandBuffers[m_CurrentFrame]; }
+
+		uint32_t GetCurrentFrameIndex() const { return m_CurrentFrame; }
+		uint32_t GetCurrentImageIndex() const { return m_CurrentImageIndex; }
+		uint32_t GetFramesInFlight() const { return FramesInFlight; }
 
 	private:
 		void CreateInstance();

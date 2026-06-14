@@ -20,10 +20,9 @@ namespace Aine
 		virtual uint32_t GetHeight() const override { return m_WindowProps.Height; };
 
 		inline void SetEventCallback(const EventCallbackFn& callback) override { m_WindowProps.EventCallback = callback; }
-
+		void DispatchSDLEvent(const SDL_Event& event);
 	private:
 		void Init();
-		void HandleSDLEvent(const SDL_Event& event);
 
 	private:
 

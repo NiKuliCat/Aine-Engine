@@ -33,7 +33,7 @@ namespace Aine::Render
 
 
 
-	VKQueueFamilyIndices FindQueueFamilies(VkPhysicalDevice physcialDevice, VkSurfaceKHR surface)
+	inline VKQueueFamilyIndices FindQueueFamilies(VkPhysicalDevice physcialDevice, VkSurfaceKHR surface)
 	{
 		VKQueueFamilyIndices indices{};
 
@@ -70,7 +70,7 @@ namespace Aine::Render
 
 	}
 
-	std::vector<const char*> GetSDLRequiredInstanceExtensions()
+	inline std::vector<const char*> GetSDLRequiredInstanceExtensions()
 	{
 
 		Uint32 count = 0;
@@ -110,7 +110,7 @@ namespace Aine::Render
 		return VK_FALSE;
 	}
 
-	void VKCheck(VkResult result, const char* message)
+	inline void VKCheck(VkResult result, const char* message)
 	{
 		if (result != VK_SUCCESS)
 		{
@@ -120,7 +120,7 @@ namespace Aine::Render
 	}
 
 
-	void PopulateDebugMessengerCreateInfo(VkDebugUtilsMessengerCreateInfoEXT& createInfo)
+	inline void PopulateDebugMessengerCreateInfo(VkDebugUtilsMessengerCreateInfoEXT& createInfo)
 	{
 		createInfo = {};
 		createInfo.sType = VK_STRUCTURE_TYPE_DEBUG_UTILS_MESSENGER_CREATE_INFO_EXT;
@@ -136,7 +136,7 @@ namespace Aine::Render
 	}
 
 	
-	std::vector<VkPhysicalDevice> GetAllEnablePhysicalDevices(VkInstance instance)
+	inline std::vector<VkPhysicalDevice> GetAllEnablePhysicalDevices(VkInstance instance)
 	{
 		uint32_t physicalDevicesCount = 0;
 		vkEnumeratePhysicalDevices(instance, &physicalDevicesCount, nullptr);
@@ -149,7 +149,7 @@ namespace Aine::Render
 		return physicalDevices;
 	}
 
-	bool CheckDeviceExtensionSupport(VkPhysicalDevice device)
+	inline bool CheckDeviceExtensionSupport(VkPhysicalDevice device)
 	{
 		uint32_t extensionsCount = 0;
 		vkEnumerateDeviceExtensionProperties(device, nullptr, &extensionsCount, nullptr);
@@ -166,7 +166,7 @@ namespace Aine::Render
 		return requireExtensions.empty();
 	}
 
-	SwapchainSupportDetails QuerySwapchainSupport(VkPhysicalDevice device, VkSurfaceKHR surface)
+	inline SwapchainSupportDetails QuerySwapchainSupport(VkPhysicalDevice device, VkSurfaceKHR surface)
 	{
 		SwapchainSupportDetails details{};
 
@@ -194,7 +194,7 @@ namespace Aine::Render
 	}
 
 
-	bool IsDeviceSuitable(VkPhysicalDevice device,VkSurfaceKHR surface)
+	inline bool IsDeviceSuitable(VkPhysicalDevice device,VkSurfaceKHR surface)
 	{
 		VKQueueFamilyIndices indices = FindQueueFamilies(device, surface);
 
@@ -210,7 +210,7 @@ namespace Aine::Render
 		return indices.IsComplete() && extensionsSupported && swapchainAdequate;
 	}
 
-	VkPhysicalDevice PickPhysicalDevice(VkInstance instance,VkSurfaceKHR surface)
+	inline VkPhysicalDevice PickPhysicalDevice(VkInstance instance,VkSurfaceKHR surface)
 	{
 		auto physicalDevices = GetAllEnablePhysicalDevices(instance);
 
@@ -226,7 +226,7 @@ namespace Aine::Render
 		return nullptr;
 	}
 
-	VkSurfaceFormatKHR ChooseSwapSurfaceFormat(const std::vector<VkSurfaceFormatKHR>& formats)
+	inline VkSurfaceFormatKHR ChooseSwapSurfaceFormat(const std::vector<VkSurfaceFormatKHR>& formats)
 	{
 		for (const auto& format : formats)
 		{
@@ -239,7 +239,7 @@ namespace Aine::Render
 		return formats[0];
 	}
 
-	VkPresentModeKHR ChooseSwapPresentMode(const std::vector<VkPresentModeKHR>& presentModes)
+	inline VkPresentModeKHR ChooseSwapPresentMode(const std::vector<VkPresentModeKHR>& presentModes)
 	{
 		for (const auto& mode : presentModes)
 		{
@@ -250,7 +250,7 @@ namespace Aine::Render
 		return VK_PRESENT_MODE_FIFO_KHR;
 	}
 
-	VkExtent2D ChooseSwapExtent(const VkSurfaceCapabilitiesKHR& capabilities,SDL_Window* windowHanle)
+	inline VkExtent2D ChooseSwapExtent(const VkSurfaceCapabilitiesKHR& capabilities,SDL_Window* windowHanle)
 	{
 		if (capabilities.currentExtent.width != UINT32_MAX)
 		{
