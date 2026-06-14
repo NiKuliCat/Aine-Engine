@@ -7,6 +7,7 @@
 
 #include "Core/Log.h"
 #include <set>
+#include <algorithm>
 namespace Aine::Render
 {
 	constexpr std::array<const char*, 1> s_ValidationLayers = { "VK_LAYER_KHRONOS_validation" };
@@ -223,5 +224,63 @@ namespace Aine::Render
 
 		AINE_ASSERT(0, "Can not find a suitable physical device !");
 		return nullptr;
+	}
+
+	VkSurfaceFormatKHR ChooseSwapSurfaceFormat(const std::vector<VkSurfaceFormatKHR>& formats)
+	{
+		for (const auto& format : formats)
+		{
+			if (format.format == VK_FORMAT_R8G8B8A8_UNORM && format.colorSpace == VK_COLOR_SPACE_SRGB_NONLINEAR_KHR)
+			{
+				return format;
+			}
+		}
+
+		return formats[0];
+	}
+
+	VkPresentModeKHR ChooseSwapPresentMode(const std::vector<VkPresentModeKHR>& presentModes)
+	{
+		for (const auto& mode : presentModes)
+		{
+			if (mode == VK_PRESENT_MODE_MAILBOX_KHR)
+				return mode;
+		}
+
+		return VK_PRESENT_MODE_FIFO_KHR;
+	}
+
+	VkExtent2D ChooseSwapExtent(const VkSurfaceCapabilitiesKHR& capabilities,SDL_Window* windowHanle)
+	{
+		if (capabilities.currentExtent.width != UINT32_MAX)
+		{
+			return capabilities.currentExtent;
+		}
+
+		int width = 0;
+		int height = 0;
+		if (!SDL_GetWindowSizeInPixels(windowHanle, &width, &height))
+		{
+			// 失败时你可以自己处理错误，这里只是兜底
+			width = 1;
+			height = 1;
+		}
+
+		VkExtent2D actualExtent = {
+			static_cast<uint32_t>(width),
+			static_cast<uint32_t>(height)
+		};
+
+		actualExtent.width = std::clamp(
+			actualExtent.width,
+			capabilities.minImageExtent.width,
+			capabilities.maxImageExtent.width);
+
+		actualExtent.height = std::clamp(
+			actualExtent.height,
+			capabilities.minImageExtent.height,
+			capabilities.maxImageExtent.height);
+
+		return actualExtent;
 	}
 }

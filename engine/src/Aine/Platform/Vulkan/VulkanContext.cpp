@@ -23,6 +23,7 @@ namespace Aine::Render
 
 		m_PhysicalDevice = PickPhysicalDevice(m_Instance, m_Surface);
 		CreateLogicalDevice();
+		CreateSwapchain();
 
 	}
 	void VulkanContext::OnDestroy()
@@ -139,6 +140,65 @@ namespace Aine::Render
 
 		vkGetDeviceQueue(m_LogicalDevice, indices.GraphicsFamily.value(), 0, &m_GraphicsQueue);
 		vkGetDeviceQueue(m_LogicalDevice, indices.PresentFamily.value(), 0, &m_PresentQueue);
+	}
+
+	void VulkanContext::CreateSwapchain()
+	{
+		SwapchainSupportDetails support = QuerySwapchainSupport(m_PhysicalDevice, m_Surface);
+
+		VkSurfaceFormatKHR surfaceFormat = ChooseSwapSurfaceFormat(support.Formats);
+
+		VkPresentModeKHR presentMode = ChooseSwapPresentMode(support.PresentModes);
+
+		VkExtent2D extent = ChooseSwapExtent(support.Capabilities,m_WindowHandle);
+
+		uint32_t imageCount = support.Capabilities.minImageCount + 1;
+		if (support.Capabilities.maxImageCount > 0 && imageCount > support.Capabilities.maxImageCount)
+		{
+			imageCount = support.Capabilities.maxImageCount;
+		}
+
+		uint32_t queueFamilyIndices[] = { m_GraphicsQueueFamilyIndex, m_PresentQueueFamilyIndex };
+
+		VkSwapchainCreateInfoKHR createInfo{};
+		createInfo.sType = VK_STRUCTURE_TYPE_SWAPCHAIN_CREATE_INFO_KHR;
+		createInfo.surface = m_Surface;
+		createInfo.minImageCount = imageCount;
+		createInfo.imageFormat = surfaceFormat.format;
+		createInfo.imageColorSpace = surfaceFormat.colorSpace;
+		createInfo.imageExtent = extent;
+		createInfo.imageArrayLayers = 1;
+		createInfo.imageUsage = VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT;
+
+		if (m_GraphicsQueueFamilyIndex != m_PresentQueueFamilyIndex)
+		{
+			createInfo.imageSharingMode = VK_SHARING_MODE_CONCURRENT;
+			createInfo.queueFamilyIndexCount = 2;
+			createInfo.pQueueFamilyIndices = queueFamilyIndices;
+		}
+
+		else
+		{
+			createInfo.imageSharingMode = VK_SHARING_MODE_EXCLUSIVE;
+		}
+
+		createInfo.preTransform = support.Capabilities.currentTransform;
+		createInfo.compositeAlpha = VK_COMPOSITE_ALPHA_OPAQUE_BIT_KHR;
+		createInfo.presentMode = presentMode;
+		createInfo.clipped = VK_TRUE;
+		createInfo.oldSwapchain = VK_NULL_HANDLE;
+
+		VKCheck(vkCreateSwapchainKHR(m_LogicalDevice, &createInfo, nullptr, &m_Swapchain),"Faild to create vulkan swapchain !");
+
+		vkGetSwapchainImagesKHR(m_LogicalDevice, m_Swapchain, &imageCount, nullptr);
+		m_SwapchainImages.resize(imageCount);
+
+		vkGetSwapchainImagesKHR(m_LogicalDevice, m_Swapchain, &imageCount, m_SwapchainImages.data());
+		m_SwapchainImageLayouts.assign(imageCount, VK_IMAGE_LAYOUT_UNDEFINED);
+		m_ImagesInFlight.assign(imageCount, VK_NULL_HANDLE);
+
+		m_SwapchainImageFormat = surfaceFormat.format;
+		m_SwapchainExtent = extent;
 	}
 
 
